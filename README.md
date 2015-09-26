@@ -65,6 +65,26 @@ Content-Type: application/json;charset=utf-8
 ]
 ```
 
+### Assumption ###
+
+```
+{
+     "invitee": "John Smith",
+     "email": "john@smith.mx"
+}
+```
+
+- The request JSON object must contain both invitee and email.
+- The length of invitee must be between `1` and `50`.
+- Email must be unique. The pattern must be ```([a-zA-Z0-9._]+)@([a-zA-Z0-9._]+)(\.)([a-zA-Z0-9]+)```.
+
+### Error ###
+
+There are some possible types of errors on API calls that receive request bodies:
+
+1. Sending invalid JSON will result in a `400 Bad Request` response.
+2. Empty list of invitees will result a `404 Not found` response.
+
 ### Development ###
 
 This application is built with the following:
@@ -75,22 +95,11 @@ This application is built with the following:
 - [MongoDB](https://www.mongodb.org/) version 2.6.10
 - [ReactiveMongo](http://reactivemongo.org/) version 0.10.5.0.akka23
 
-### Assumption ###
-
-```
-{
-     "invitee": "John Smith",
-     "email": "john@smith.mx"
-}
-```
-
-- The request Json object must contain both invitee and email.
-- The length of invitee must be between `1` and `50`.
-- Email must be unique. The pattern must be ```([a-zA-Z0-9._]+)@([a-zA-Z0-9._]+)(\.)([a-zA-Z0-9]+)```.
-
 ### Running the code locally ###
 
 1. Download this repository
 2. `Import` the project into IntllijJ IDEA.
 3. Enter `sbt run` to run the code.
 4. Enter `http://localhost:9000/` in your browser.
+
+- Enter `sbt test` to run the tests.

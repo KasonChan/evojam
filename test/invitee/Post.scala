@@ -55,10 +55,9 @@ object Post extends PlaySpecification with JSON {
       response.isDefined mustEqual true
       val result = Await.result(response.get, timeout)
 
-      val json = Json.parse(contentAsString(response.get))
-      (json \ "invitee").as[String] mustEqual "a"
-      (json \ "email").as[String] mustEqual "a@a.com"
-      result.header.status mustEqual 201
+      val expectedResponse = Json.obj("messages" -> Json.arr("Email is already registered"))
+      contentAsString(response.get) mustEqual prettify(expectedResponse)
+      result.header.status mustEqual 400
     }
   }
 

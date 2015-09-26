@@ -84,9 +84,9 @@ This application is built with the following:
 }
 ```
 
-The request Json object must contain both invitee and email.
-The length of invitee must be between `1` and `50`.
-Email must be unique. The pattern must be ```([a-zA-Z0-9._]+)@([a-zA-Z0-9._]+)(\.)([a-zA-Z0-9]+)```.
+- The request Json object must contain both invitee and email.
+- The length of invitee must be between `1` and `50`.
+- Email must be unique. The pattern must be ```([a-zA-Z0-9._]+)@([a-zA-Z0-9._]+)(\.)([a-zA-Z0-9]+)```.
 
 ### Running the code locally ###
 

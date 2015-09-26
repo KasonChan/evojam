@@ -25,14 +25,14 @@ object Invitees extends Controller with MongoController with JSON with Invitee {
    * Connect to the invitee collection
    * @return JSONCollection
    */
-  def inviteeCollection: JSONCollection = db.collection[JSONCollection]("invitee")
+  private def inviteeCollection: JSONCollection = db.collection[JSONCollection]("invitee")
 
   /**
    * Email collection
    * Connect to the email collection
    * @return JSONCollection
    */
-  def emailCollection: JSONCollection = db.collection[JSONCollection]("email")
+  private def emailCollection: JSONCollection = db.collection[JSONCollection]("email")
 
   /**
    * Find query
@@ -101,6 +101,30 @@ object Invitees extends Controller with MongoController with JSON with Invitee {
   }
 
   /**
+   * Extract invitees
+   * Call inviteePrinting
+   * Return Some(invitees) if invitees are extracted
+   * Otherwise return None
+   * @param inviteesJsValue JsValue
+   * @return Option[JsValue]
+   */
+  private def extractInvitees(inviteesJsValue: JsValue): Option[JsValue] = {
+    // Extract messages string if any
+    val jv = (inviteesJsValue \ "messages").asOpt[JsValue]
+
+    jv match {
+      case Some(s) => None
+      case None =>
+        val invitees: JsArray = inviteesJsValue.as[JsArray]
+        val inviteesSeq = invitees.value.map { invitee =>
+          inviteePrinting(invitee)
+        }
+        val response = new JsArray(inviteesSeq)
+        Some(response)
+    }
+  }
+
+  /**
    * Find by email
    * Find the invitee by target
    * Call queryFind to find matched email in the database
@@ -110,7 +134,7 @@ object Invitees extends Controller with MongoController with JSON with Invitee {
    * @param target String
    * @return Future[Option[JsValue]]
    */
-  def findByEmail(target: String): Future[Option[JsValue]] = {
+  private def findByEmail(target: String): Future[Option[JsValue]] = {
     // Execute queryFind function to access the database to find the login
     val q = Json.obj("email" -> target)
     val futureJsValue: Future[JsValue] = queryFind(q)
@@ -126,10 +150,44 @@ object Invitees extends Controller with MongoController with JSON with Invitee {
     }
   }
 
-  def findAll: Action[JsValue] = ???
+  /**
+   * Find all invitees
+   * List all the invitees who type is user only in the database
+   * Return Ok if there are invitees found
+   * Otherwise return NotFound
+   * @return
+   */
+  def findAll: Action[AnyContent] = Action.async {
+    // Execute queryFind function to access the database to find
+    val q = Json.obj()
+    val futureJsValue: Future[JsValue] = queryFind(q)
 
+    futureJsValue.map {
+      jsValue =>
+        // Execute extractUser to extract the user from the query result
+        val js = extractInvitees(jsValue)
+
+        js match {
+          case Some(invitees) =>
+            Logger.info(invitees.toString)
+            Ok(prettify(invitees)).as("application/json; charset=utf-8")
+          case None =>
+            Logger.info(jsValue.toString)
+            NotFound(prettify(jsValue)).as("application/json; charset=utf-8")
+        }
+    }
+  }
+
+  /**
+   * Parse json from post request
+   * Return bad request if the json is invalid
+   * Validate invitee inputs
+   * If the invitee's email is already registered return BadRequest
+   * Otherwise insert the new user to the database and return Created with the
+   * new invitee
+   * @return Action[JsValue]
+   */
   def create: Action[JsValue] = Action.async(parse.json) { request =>
-
     // Create a transformer
     val transformer = Reads.jsPickBranch[JsString](__ \ "invitee") and
       Reads.jsPickBranch[JsString](__ \ "email") reduce

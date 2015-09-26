@@ -1,12 +1,24 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
+import json.JSON
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, AnyContent, Controller}
+import play.modules.reactivemongo.MongoController
 
-object Application extends Controller {
+import scala.concurrent.Future
 
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+object Application extends Controller with MongoController with JSON {
+
+  /**
+   * Root
+   * Returns all api links
+   * @return Action[AnyContent]
+   */
+  def root: Action[AnyContent] = Action.async {
+    val response: JsValue =
+      Json.obj("invitation_url" -> "/invitation",
+        "documentation_url" -> "https://github.com/KasonChan/evojam/blob/master/README.md")
+    Future.successful(Ok(prettify(response)).as("application/json; charset=utf-8"))
   }
 
 }

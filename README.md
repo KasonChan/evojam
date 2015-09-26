@@ -5,7 +5,7 @@
 An web application written in Scala with Play Framework serving the endpoints 
 described below:
 
-### Requirements ###
+### Requirement ###
 
 #### Create a invitee ####
 
@@ -74,6 +74,19 @@ This application is built with the following:
 - [Play framework](https://playframework.com/) version 2.3.8
 - [MongoDB](https://www.mongodb.org/) version 2.6.10
 - [ReactiveMongo](http://reactivemongo.org/) version 0.10.5.0.akka23
+
+### Assumption ###
+
+```
+{
+     "invitee": "John Smith",
+     "email": "john@smith.mx"
+}
+```
+
+The request Json object must contain both invitee and email.
+The length of invitee must be between `1` and `50`.
+Email must be unique. The pattern must be ```([a-zA-Z0-9._]+)@([a-zA-Z0-9._]+)(\.)([a-zA-Z0-9]+)```.
 
 ### Running the code locally ###
 

@@ -1,6 +1,6 @@
 # Evojam #
 
-[![Build Status](https://travis-ci.org/KasonChan/evojam.svg)](https://travis-ci.org/KasonChan/evojam)
+[![Build Status](https://travis-ci.org/kasonchan/evojam.svg)](https://travis-ci.org/kasonchan/evojam)
 
 An web application written in Scala with Play Framework serving the endpoints 
 described below:
